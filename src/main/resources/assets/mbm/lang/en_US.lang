@@ -1,0 +1,6 @@
+##Blocks
+tile.battle_block.name=Battle Block
+
+##Items
+item.mob_stick.name=Mob Stick
+container.battle_block.name=Battle Block Inventory
