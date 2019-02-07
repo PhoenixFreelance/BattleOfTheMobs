@@ -3,6 +3,7 @@ package com.phoenixx.MobBattleMod;
 import com.phoenixx.MobBattleMod.blocks.tileEntities.BattleBlockTileEntity;
 import com.phoenixx.MobBattleMod.init.ModRecipes;
 import com.phoenixx.MobBattleMod.proxy.CommonProxy;
+import com.phoenixx.MobBattleMod.util.EntityDataPacket;
 import com.phoenixx.MobBattleMod.util.Reference;
 import com.phoenixx.MobBattleMod.util.SpawnEntityPacket;
 import com.phoenixx.MobBattleMod.util.handlers.EventHandler;
@@ -40,6 +41,7 @@ public class MobBattleMod {
         MinecraftForge.EVENT_BUS.register(eventHandler);
 
         SIMPLE_NETWORK_INSTANCE.registerMessage(SpawnEntityPacket.Handler.class, SpawnEntityPacket.class, 0, Side.SERVER);
+		SIMPLE_NETWORK_INSTANCE.registerMessage(EntityDataPacket.Handler.class, EntityDataPacket.class, 1, Side.CLIENT);
     }
 	
 	@Mod.EventHandler

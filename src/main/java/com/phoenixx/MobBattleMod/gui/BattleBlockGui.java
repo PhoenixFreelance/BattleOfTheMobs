@@ -10,9 +10,6 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
@@ -36,8 +33,6 @@ public class BattleBlockGui extends GuiContainer
     private final InventoryPlayer playerInventory;
     private final BattleBlockTileEntity tileBattleBlock;
 
-    private final GuiScreen previousGui;
-
     /** Chat entry fields */
     protected GuiTextField teamOneTextField;
     protected GuiTextField teamTwoTextField;
@@ -53,7 +48,6 @@ public class BattleBlockGui extends GuiContainer
         super(new BattleBlockContainer(player, tileentity));
         this.playerInventory = player;
         this.tileBattleBlock = tileentity;
-        this.previousGui = null;
     }
 
     @Override
@@ -84,32 +78,25 @@ public class BattleBlockGui extends GuiContainer
             //TODO Start game code here
 
             IItemHandler inventory = tileBattleBlock.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
-            ArrayList<EntityCreature> teamOneList = new ArrayList<>();
-            ArrayList<EntityCreature> teamTwoList = new ArrayList<>();
 
             for(int x = 0; x < 24; x++){
 
                 if(!inventory.getStackInSlot(x).isEmpty()){
                     ItemStack itemStack = inventory.getStackInSlot(x);
                     ItemMonsterPlacer itemMonsterPlacer = (ItemMonsterPlacer) itemStack.getItem();
-                    Entity entity = EntityList.createEntityByIDFromName(itemMonsterPlacer.getNamedIdFrom(itemStack), mc.world);
+                    //Entity entity = EntityList.createEntityByIDFromName(itemMonsterPlacer.getNamedIdFrom(itemStack), mc.world);
                     String entityString = itemMonsterPlacer.getNamedIdFrom(itemStack).toString();
 
                     if(x < 12){
                         teamOne.add(entityString);
-                        teamOneList.add((EntityCreature) entity);
                     } else {
                         teamTwo.add(entityString);
-                        teamTwoList.add((EntityCreature) entity);
                     }
                 }
             }
 
             FightHandler.setTeamOne(teamOne, teamOneName);
             FightHandler.setTeamTwo(teamTwo, teamTwoName);
-
-            FightHandler.setTeamOneList(teamOneList);
-            FightHandler.setTeamTwoList(teamTwoList);
 
             FightHandler.setBlockPos(tileBattleBlock.getPos());
 

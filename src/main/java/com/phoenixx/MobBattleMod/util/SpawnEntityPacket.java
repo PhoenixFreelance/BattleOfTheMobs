@@ -1,8 +1,12 @@
 package com.phoenixx.MobBattleMod.util;
 
+import com.phoenixx.MobBattleMod.MobBattleMod;
 import com.phoenixx.MobBattleMod.entities.Team;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -15,6 +19,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Random;
 
@@ -24,6 +29,9 @@ public class SpawnEntityPacket implements IMessage
     private String blockData;
     private String teamOneData;
     private String teamTwoData;
+
+    private static ArrayList<String> teamOneList = new ArrayList<>();
+    private static ArrayList<String> teamTwoList = new ArrayList<>();
 
     public SpawnEntityPacket()
     {
@@ -35,10 +43,10 @@ public class SpawnEntityPacket implements IMessage
         this.messageID = number;
     }
 
-    public SpawnEntityPacket(int number, String givenData, String givenTeamOneData, String givenTeamTwoData)
+    public SpawnEntityPacket(int number, String givenBlockData, String givenTeamOneData, String givenTeamTwoData, String givenTeamOneName, String givenTeamTwoName)
     {
         this.messageID = number;
-        this.blockData = givenData;
+        this.blockData = givenBlockData;
         this.teamOneData = givenTeamOneData;
         this.teamTwoData = givenTeamTwoData;
     }
@@ -89,14 +97,18 @@ public class SpawnEntityPacket implements IMessage
 
                             // TEAM ONE SPAWN
                             for(String entityName: parsedTeamOneData){
-                                spawnCreature(world, entityName, generateRandomCord(teamOneSpawnBB.minX, teamOneSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamOneSpawnBB.minZ, teamOneSpawnBB.maxZ), "Team One");
+                                spawnCreature(world, entityName, generateRandomCord(teamOneSpawnBB.minX, teamOneSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamOneSpawnBB.minZ, teamOneSpawnBB.maxZ), parsedBlockData[3], true);
                             }
 
                             // TEAM TWO SPAWN
                             for(String entityName: parsedTeamTwoData){
-                                spawnCreature(world, entityName, generateRandomCord(teamTwoSpawnBB.minX, teamTwoSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamTwoSpawnBB.minZ, teamTwoSpawnBB.maxZ), "Team Two");
+                                spawnCreature(world, entityName, generateRandomCord(teamTwoSpawnBB.minX, teamTwoSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamTwoSpawnBB.minZ, teamTwoSpawnBB.maxZ), parsedBlockData[4], false);
                             }
 
+                            String teamOneDataSplit = String.join("|", teamOneList);
+                            String teamTwoDataSplit = String.join("|", teamTwoList);
+
+                            MobBattleMod.SIMPLE_NETWORK_INSTANCE.sendTo(new EntityDataPacket(0,/* parsedBlockData[0]+"|"+parsedBlockData[1]+"|"+parsedBlockData[2],*/ teamOneDataSplit, teamTwoDataSplit), player);
                         }
                     }
                 }
@@ -110,13 +122,13 @@ public class SpawnEntityPacket implements IMessage
      * Parameters: world, entityID, x, y, z.
      */
     @Nullable
-    public static Entity spawnCreature(World worldIn, String entityNameID, double x, double y, double z, String team)
+    public static Entity spawnCreature(World worldIn, String entityNameID, double x, double y, double z, String team, boolean teamOne)
     {
         try{
             Entity entity = EntityList.createEntityByIDFromName(new ResourceLocation(entityNameID), worldIn);
             if (entity instanceof EntityLiving)
             {
-                System.out.println("spawnCreature METHOD: "+team+" Spawning " + entity.getName() + " at X: " + x + " Y: " + y + " Z:" + z);
+                System.out.println("spawnCreature METHOD: "+team+" Spawning " + entity.getName() + " WITH ID: " + entity.getEntityId() + " at X: " + x + " Y: " + y + " Z:" + z);
                 EntityLiving entityliving = (EntityLiving)entity;
                 entity.setLocationAndAngles(x, y, z, MathHelper.wrapDegrees(worldIn.rand.nextFloat() * 360.0F), 0.0F);
                 entityliving.rotationYawHead = entityliving.rotationYaw;
@@ -125,10 +137,17 @@ public class SpawnEntityPacket implements IMessage
                 worldIn.spawnEntity(entity);
                 entityliving.playLivingSound();
 
-                Team.updateEntity(team, (EntityCreature) entity);
+                if(teamOne){
+                    teamOneList.add(String.valueOf(entity.getEntityId()));
+                } else {
+                    teamTwoList.add(String.valueOf(entity.getEntityId()));
+                }
+
+                //Team.updateEntity(team, (EntityCreature) entity);
             }
             return entity;
         } catch (ConcurrentModificationException e){
+            System.out.println("CONCURRENT-MODIFICATION-ERROR in SpawnEntityPacket.spawnCreature()");
             e.printStackTrace();
         }
         return null;

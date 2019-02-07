@@ -1,6 +1,7 @@
 package com.phoenixx.MobBattleMod.util.handlers;
 
 import com.phoenixx.MobBattleMod.MobBattleMod;
+import com.phoenixx.MobBattleMod.entities.Team;
 import com.phoenixx.MobBattleMod.util.SpawnEntityPacket;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.util.math.BlockPos;
@@ -42,19 +43,27 @@ public class FightHandler
         }
 
         if (starterTick == 0 && !started) {
-            started = true;
             startTimer = false;
             starterTick = 0;
 
             String teamOneDataSplit = String.join("|", teamOne);
             String teamTwoDataSplit = String.join("|", teamTwo);
 
-            MobBattleMod.SIMPLE_NETWORK_INSTANCE.sendToServer(new SpawnEntityPacket(0, getBlockPos().getX()+"|"+getBlockPos().getY()+"|"+getBlockPos().getZ()+"|", teamOneDataSplit, teamTwoDataSplit ));
+            MobBattleMod.SIMPLE_NETWORK_INSTANCE.sendToServer(new SpawnEntityPacket(0, getBlockPos().getX()+"|"+getBlockPos().getY()+"|"+getBlockPos().getZ()+"|"+teamOneName+"|"+teamTwoName, teamOneDataSplit, teamTwoDataSplit, teamOneName, teamTwoName));
             ticker++;
+            started = true;
         }
 
         if(started){
             ticker++;
+
+            for(EntityCreature entityCreature: teamOneList){
+                Team.updateEntity(teamOneName, entityCreature);
+            }
+
+            for(EntityCreature entityCreature: teamTwoList){
+                Team.updateEntity(teamTwoName, entityCreature);
+            }
 
             if(teamOneList.isEmpty()){
                 gameOver = true;
@@ -68,6 +77,8 @@ public class FightHandler
                 gameOver = true;
                 winner = teamOneName;
                 starterTick--;
+
+                System.out.println("Seconds till reset: " + starterTick / 20);
 
                 if(starterTick == 0){
                     reset();
