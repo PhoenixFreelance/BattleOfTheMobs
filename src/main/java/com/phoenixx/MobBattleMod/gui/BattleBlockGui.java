@@ -1,7 +1,10 @@
 package com.phoenixx.MobBattleMod.gui;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
 import com.phoenixx.MobBattleMod.blocks.tileEntities.BattleBlockTileEntity;
 import com.phoenixx.MobBattleMod.gui.containers.BattleBlockContainer;
+import com.phoenixx.MobBattleMod.proxy.ClientProxy;
+import com.phoenixx.MobBattleMod.util.EnumFight;
 import com.phoenixx.MobBattleMod.util.Reference;
 import com.phoenixx.MobBattleMod.util.handlers.FightHandler;
 import net.minecraft.client.gui.GuiButton;
@@ -15,6 +18,7 @@ import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -72,32 +76,35 @@ public class BattleBlockGui extends GuiContainer
     @Override
     protected void actionPerformed(GuiButton button) {
         if (button.id == 1) {
-            //TODO Start game code here
 
-            IItemHandler inventory = tileBattleBlock.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
+            if(!FightHandler.started){
+                IItemHandler inventory = tileBattleBlock.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, EnumFacing.NORTH);
 
-            for(int x = 0; x < 24; x++){
+                for(int x = 0; x < 24; x++){
 
-                if(!inventory.getStackInSlot(x).isEmpty()){
-                    ItemStack itemStack = inventory.getStackInSlot(x);
-                    ItemMonsterPlacer itemMonsterPlacer = (ItemMonsterPlacer) itemStack.getItem();
-                    //Entity entity = EntityList.createEntityByIDFromName(itemMonsterPlacer.getNamedIdFrom(itemStack), mc.world);
-                    String entityString = itemMonsterPlacer.getNamedIdFrom(itemStack).toString();
+                    if(!inventory.getStackInSlot(x).isEmpty()){
+                        ItemStack itemStack = inventory.getStackInSlot(x);
+                        ItemMonsterPlacer itemMonsterPlacer = (ItemMonsterPlacer) itemStack.getItem();
+                        String entityString = itemMonsterPlacer.getNamedIdFrom(itemStack).toString();
 
-                    if(x < 12){
-                        teamOne.add(entityString);
-                    } else {
-                        teamTwo.add(entityString);
+                        if(x < 12){
+                            teamOne.add(entityString);
+                        } else {
+                            teamTwo.add(entityString);
+                        }
                     }
                 }
+
+                FightHandler.setTeamOne(teamOne, teamOneTextField.getText());
+                FightHandler.setTeamTwo(teamTwo, teamTwoTextField.getText());
+
+                FightHandler.setBlockPos(tileBattleBlock.getPos());
+
+                FightHandler.start();
+
+            } else if(FightHandler.started && !FightHandler.matchStatus.equals(EnumFight.WAITING_END)){
+                ClientProxy.minecraft.player.sendMessage(new TextComponentString(ChatFormatting.GREEN + "[Mob Battle]" + ChatFormatting.RED + " There's currently a match in progress!"));
             }
-
-            FightHandler.setTeamOne(teamOne, teamOneTextField.getText());
-            FightHandler.setTeamTwo(teamTwo, teamTwoTextField.getText());
-
-            FightHandler.setBlockPos(tileBattleBlock.getPos());
-
-            FightHandler.start();
 
             playerInventory.player.closeScreen();
         }

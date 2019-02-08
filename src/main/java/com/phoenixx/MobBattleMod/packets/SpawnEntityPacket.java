@@ -9,7 +9,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -18,7 +17,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import javax.annotation.Nullable;
 import java.util.ConcurrentModificationException;
-import java.util.List;
 import java.util.Random;
 
 public class SpawnEntityPacket implements IMessage
@@ -88,9 +86,6 @@ public class SpawnEntityPacket implements IMessage
                         String teamOneName = parsedBlockData[3];
                         String teamTwoName = parsedBlockData[4];
 
-                        System.out.println("PARSED TEAM ONE DATA: " + parsedTeamOneData);
-                        System.out.println("PARSED TEAM TWO DATA: " + parsedTeamTwoData);
-
                         BlockPos teamOnePos1 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 5, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 5);
                         BlockPos teamOnePos2 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 10, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 10);
 
@@ -101,30 +96,11 @@ public class SpawnEntityPacket implements IMessage
                         AxisAlignedBB teamTwoSpawnBB = Team.getBoundingBoxPositions(teamTwoPos1, teamTwoPos2);
                         
                         for(String entityName: parsedTeamOneData){
-                            Entity entity = spawnCreature(world, entityName, generateRandomCord(teamOneSpawnBB.minX, teamOneSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamOneSpawnBB.minZ, teamOneSpawnBB.maxZ), teamOneName, true);
-                            //Team.updateEntity(teamOneName, (EntityCreature) entity);
+                            spawnCreature(world, entityName, generateRandomCord(teamOneSpawnBB.minX, teamOneSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamOneSpawnBB.minZ, teamOneSpawnBB.maxZ), teamOneName, true);
                         }
 
                         for(String entityName: parsedTeamTwoData){
-                            Entity entity = spawnCreature(world, entityName, generateRandomCord(teamTwoSpawnBB.minX, teamTwoSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamTwoSpawnBB.minZ, teamTwoSpawnBB.maxZ), teamTwoName, false);
-                            //Team.updateEntity(teamTwoName, (EntityCreature) entity);
-                        }
-                    } else if(message.messageID == 1) {
-
-                        player.sendMessage(new TextComponentString("[Mob Battle] Killing remaining mobs..."));
-
-                        String[] parsedData = message.data.split("\\|");
-
-                        BlockPos pos1 = new BlockPos(Integer.valueOf(parsedData[0]) + 10, Integer.valueOf(parsedData[1]), Integer.valueOf(parsedData[2]) + 10);
-                        BlockPos pos2 = new BlockPos(Integer.valueOf(parsedData[0]) - 10, Integer.valueOf(parsedData[1]), Integer.valueOf(parsedData[2]) - 10);
-
-                        AxisAlignedBB mobArea = Team.getBoundingBoxPositions(pos1, pos2);
-
-                        List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, mobArea);
-                        entities.remove(player);
-
-                        for(int i = 0; i<entities.size(); i++) {
-                            entities.get(i).setDead();
+                            spawnCreature(world, entityName, generateRandomCord(teamTwoSpawnBB.minX, teamTwoSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamTwoSpawnBB.minZ, teamTwoSpawnBB.maxZ), teamTwoName, false);
                         }
                     }
                 }

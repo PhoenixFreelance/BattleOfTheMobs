@@ -40,7 +40,7 @@ public class MobBattleMod {
 
         SIMPLE_NETWORK_INSTANCE.registerMessage(SpawnEntityPacket.Handler.class, SpawnEntityPacket.class, 0, Side.SERVER);
 		SIMPLE_NETWORK_INSTANCE.registerMessage(EntityDataPacket.Handler.class, EntityDataPacket.class, 1, Side.CLIENT);
-        SIMPLE_NETWORK_INSTANCE.registerMessage(KillEntitiesPacket.Handler.class, KillEntitiesPacket.class, 2, Side.CLIENT);
+        SIMPLE_NETWORK_INSTANCE.registerMessage(KillEntitiesPacket.Handler.class, KillEntitiesPacket.class, 2, Side.SERVER);
     }
 	
 	@Mod.EventHandler

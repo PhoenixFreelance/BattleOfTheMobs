@@ -63,17 +63,17 @@ public class FightHandler
                 case STARTED:
                     ticker++;
                     if(teamOneAlive == 0){
-                        winner = teamOneName;
+                        winner = teamTwoName;
                         matchStatus = EnumFight.WAITING_END;
                     } else if(teamTwoAlive == 0){
-                        winner = teamTwoName;
+                        winner = teamOneName;
                         matchStatus = EnumFight.WAITING_END;
                     }
                     break;
 
                 case WAITING_END:
                     matchStatus = EnumFight.END;
-                    timer = 5 * 20;
+                    timer = 10 * 20;
                     break;
 
                 case END:

@@ -97,7 +97,7 @@ public class EventHandler
         int height = event.getResolution().getScaledHeight();
 
         Minecraft mc = ClientProxy.minecraft;
-        FontRenderer fontrenderer = mc.fontRenderer;
+        FontRenderer fontRenderer = mc.fontRenderer;
 
         if(event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR) {
             if (mc.currentScreen == null || mc.currentScreen instanceof GuiChat) {
@@ -111,10 +111,10 @@ public class EventHandler
                 String teamOneName = FightHandler.teamOneName;
                 String teamTwoName = FightHandler.teamTwoName;
 
-                String teamOneScore = ""+FightHandler.teamOneAlive+"/12";
-                String teamTwoScore = ""+FightHandler.teamTwoAlive+"/12";
+                String teamOneScore = "" + FightHandler.teamOneAlive + "/12";
+                String teamTwoScore = "" + FightHandler.teamTwoAlive + "/12";
 
-                String displayStartUpTime = (startTimer < 10 ? ChatFormatting.RED.toString() + bold + minutesLeft + ":" + (startTimer < 10 ? "0" + startTimer : startTimer) : (bold.toString() + minutesLeft + ":" + (startTimer < 10 ? "0" + startTimer : startTimer))) ;
+                String displayStartUpTime = (startTimer < 10 ? ChatFormatting.RED.toString() + bold + minutesLeft + ":" + (startTimer < 10 ? "0" + startTimer : startTimer) : (bold.toString() + minutesLeft + ":" + (startTimer < 10 ? "0" + startTimer : startTimer)));
                 String displayFightTimer = minutesLeft + ":" + (secondsLeft < 10 ? "0" + secondsLeft : secondsLeft);
 
                 String matchStarting = "Match starts in ";
@@ -124,68 +124,34 @@ public class EventHandler
                     GL11.glPushMatrix();
                     GL11.glScalef(2f, 2f, 2f);
                     mc.fontRenderer.drawStringWithShadow(matchStarting, ((width / 2) - mc.fontRenderer.getStringWidth(matchStarting)) / 2, (height / 6) / 2, Color.WHITE.getRGB());
-                    mc.fontRenderer.drawStringWithShadow( ChatFormatting.YELLOW + displayStartUpTime + ChatFormatting.RESET + "'s", ((width / 2) - mc.fontRenderer.getStringWidth(ChatFormatting.YELLOW + displayStartUpTime + ChatFormatting.RESET + "s")) / 2, (height / 4) / 2, Color.WHITE.getRGB());
+                    mc.fontRenderer.drawStringWithShadow(ChatFormatting.YELLOW + displayStartUpTime + ChatFormatting.RESET + "'s", ((width / 2) - mc.fontRenderer.getStringWidth(ChatFormatting.YELLOW + displayStartUpTime + ChatFormatting.RESET + "s")) / 2, (height / 4) / 2, Color.WHITE.getRGB());
                     GL11.glPopMatrix();
-                } else if(FightHandler.matchStatus.equals(EnumFight.STARTED)){
+                } else if (FightHandler.matchStatus.equals(EnumFight.STARTED)) {
                     Gui.drawRect((width / 2) - mc.fontRenderer.getStringWidth(displayFightTimer), 2, (width / 2) + mc.fontRenderer.getStringWidth(displayFightTimer), 15, Integer.MIN_VALUE);
-                    fontrenderer.drawString(displayFightTimer, (width / 2) - (fontrenderer.getStringWidth(displayFightTimer) / 2), 5, Color.YELLOW.getRGB());
+                    drawString(fontRenderer, displayFightTimer, (width / 2) - (fontRenderer.getStringWidth(displayFightTimer) / 2), 5, 1, Color.YELLOW.getRGB());
 
-                    GL11.glPushMatrix();
-                    GL11.glScalef(1.5f, 1.5f, 1.5f);
-                    mc.fontRenderer.drawStringWithShadow(ChatFormatting.GREEN + teamOneName, (mc.fontRenderer.getStringWidth(ChatFormatting.GREEN + teamOneName) / 2), 10, Color.WHITE.getRGB());
-                    mc.fontRenderer.drawStringWithShadow(teamOneScore, (mc.fontRenderer.getStringWidth(ChatFormatting.GREEN + teamOneName)) - (mc.fontRenderer.getStringWidth(teamOneScore) / 2), 20, Color.WHITE.getRGB());
-                    GL11.glPopMatrix();
+                    drawString(fontRenderer, ChatFormatting.GREEN + teamOneName, 30, 10, 1.5F, Color.WHITE.getRGB());
+                    drawString(fontRenderer, teamOneScore, 31 + ((fontRenderer.getStringWidth(ChatFormatting.GREEN + teamOneName) / 2) - (fontRenderer.getStringWidth(teamOneScore) / 2)), 25, 1.5F, Color.WHITE.getRGB());
 
-                    GL11.glPushMatrix();
-                    GL11.glScalef(1.5f, 1.5f, 1.5f);
-                    mc.fontRenderer.drawStringWithShadow(ChatFormatting.GREEN + teamTwoName, width / 2, 10, Color.WHITE.getRGB());
-                    mc.fontRenderer.drawStringWithShadow(teamTwoScore, width / 2, 20, Color.WHITE.getRGB());
-                    GL11.glPopMatrix();
-                } else if(FightHandler.matchStatus.equals(EnumFight.WAITING_END)){
+                    drawString(fontRenderer, ChatFormatting.GREEN + teamTwoName, width - 103, 10, 1.5F, Color.WHITE.getRGB());
+                    drawString(fontRenderer, teamTwoScore, (width - 103) + ((fontRenderer.getStringWidth(ChatFormatting.GREEN + teamTwoName) / 2) - (fontRenderer.getStringWidth(teamTwoScore) / 2)), 25, 1.5F, Color.WHITE.getRGB());
+
+                } else if (FightHandler.matchStatus.equals(EnumFight.END) && startTimer > 0) {
                     GL11.glPushMatrix();
                     GL11.glScalef(2f, 2f, 2f);
                     mc.fontRenderer.drawStringWithShadow(gameOver, ((width / 2) - mc.fontRenderer.getStringWidth(gameOver)) / 2, (height / 6) / 2, Color.WHITE.getRGB());
-                    mc.fontRenderer.drawStringWithShadow( "Winner: " + ChatFormatting.GREEN + FightHandler.winner, ((width / 2) - mc.fontRenderer.getStringWidth("Winner: " + ChatFormatting.GREEN + FightHandler.winner)) / 2, (height / 4) / 2, Color.WHITE.getRGB());
+                    mc.fontRenderer.drawStringWithShadow("Winner: " + ChatFormatting.GREEN + FightHandler.winner, ((width / 2) - mc.fontRenderer.getStringWidth("Winner: " + ChatFormatting.GREEN + FightHandler.winner)) / 2, (height / 4) / 2, Color.WHITE.getRGB());
                     GL11.glPopMatrix();
                 }
-
-
-             /*  if(FightHandler.startTimer){
-                   if (startTimer > 0) {
-                       GL11.glPushMatrix();
-                       GL11.glScalef(2f, 2f, 2f);
-                       mc.fontRenderer.drawStringWithShadow(matchStarting, ((width / 2) - mc.fontRenderer.getStringWidth(matchStarting)) / 2, (height / 6) / 2, Color.WHITE.getRGB());
-                       mc.fontRenderer.drawStringWithShadow( ChatFormatting.YELLOW + displayStartUpTime + ChatFormatting.RESET + "'s", ((width / 2) - mc.fontRenderer.getStringWidth(ChatFormatting.YELLOW + displayStartUpTime + ChatFormatting.RESET + "s")) / 2, (height / 4) / 2, Color.WHITE.getRGB());
-                       GL11.glPopMatrix();
-                   }
-               } else if (FightHandler.started){
-                    if (startTimer == 0 && seconds >= 0){
-                       Gui.drawRect((width / 2) - mc.fontRenderer.getStringWidth(displayFightTimer), 2, (width / 2) + mc.fontRenderer.getStringWidth(displayFightTimer), 15, Integer.MIN_VALUE);
-                       fontrenderer.drawString(displayFightTimer, (width / 2) - (fontrenderer.getStringWidth(displayFightTimer) / 2), 5, Color.YELLOW.getRGB());
-
-                        GL11.glPushMatrix();
-                        GL11.glScalef(1.5f, 1.5f, 1.5f);
-                        mc.fontRenderer.drawStringWithShadow(ChatFormatting.GREEN + teamOneName, (mc.fontRenderer.getStringWidth(ChatFormatting.GREEN + teamOneName) / 2), 10, Color.WHITE.getRGB());
-                        mc.fontRenderer.drawStringWithShadow(teamOneScore, (mc.fontRenderer.getStringWidth(ChatFormatting.GREEN + teamOneName)) - (mc.fontRenderer.getStringWidth(teamOneScore) / 2), 20, Color.WHITE.getRGB());
-                        GL11.glPopMatrix();
-
-                        GL11.glPushMatrix();
-                        GL11.glScalef(1.5f, 1.5f, 1.5f);
-                        mc.fontRenderer.drawStringWithShadow(ChatFormatting.GREEN + teamTwoName, width / 2, 10, Color.WHITE.getRGB());
-                        mc.fontRenderer.drawStringWithShadow(teamTwoScore, width / 2, 20, Color.WHITE.getRGB());
-                        GL11.glPopMatrix();
-                    }
-               }
-
-               if(FightHandler.gameOver){
-                   GL11.glPushMatrix();
-                   GL11.glScalef(2f, 2f, 2f);
-                   mc.fontRenderer.drawStringWithShadow(gameOver, ((width / 2) - mc.fontRenderer.getStringWidth(gameOver)) / 2, (height / 6) / 2, Color.WHITE.getRGB());
-                   mc.fontRenderer.drawStringWithShadow( "Winner: " + ChatFormatting.GREEN + FightHandler.winner, ((width / 2) - mc.fontRenderer.getStringWidth("Winner: " + ChatFormatting.GREEN + FightHandler.winner)) / 2, (height / 4) / 2, Color.WHITE.getRGB());
-                   GL11.glPopMatrix();
-               }*/
-
             }
         }
+    }
+
+    public void drawString(FontRenderer fontRendererIn, String text, int x, int y, float size, int color) {
+        GL11.glPushMatrix();
+        GL11.glTranslated(x, y, 0.0D);
+        GL11.glScaled(size, size, size);
+        fontRendererIn.drawStringWithShadow(text,  0, 0, color);
+        GL11.glPopMatrix();
     }
 }

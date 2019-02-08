@@ -1,5 +1,6 @@
 package com.phoenixx.MobBattleMod.packets;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
 import com.phoenixx.MobBattleMod.entities.Team;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
@@ -32,12 +33,6 @@ public class KillEntitiesPacket implements IMessage {
         this.data = givenData;
     }
 
-    public KillEntitiesPacket(int number, String givenData, String givenTeamOneData, String givenTeamTwoData) {
-        this.messageID = number;
-        this.data = givenData;
-
-    }
-
     public void fromBytes(ByteBuf buf) {
         this.messageID = buf.readInt();
         this.data = ByteBufUtils.readUTF8String(buf);
@@ -58,12 +53,12 @@ public class KillEntitiesPacket implements IMessage {
                 if (player != null) {
                     if (message.messageID == 0) {
 
-                        player.sendMessage(new TextComponentString("[Mob Battle] Killing remaining mobs..."));
+                        player.sendMessage(new TextComponentString(ChatFormatting.GREEN + "[Mob Battle]" + ChatFormatting.YELLOW + " Removing remaining mobs..."));
 
                         String[] parsedData = message.data.split("\\|");
 
-                        BlockPos pos1 = new BlockPos(Integer.valueOf(parsedData[0]) + 10, Integer.valueOf(parsedData[1]), Integer.valueOf(parsedData[2]) + 10);
-                        BlockPos pos2 = new BlockPos(Integer.valueOf(parsedData[0]) - 10, Integer.valueOf(parsedData[1]), Integer.valueOf(parsedData[2]) - 10);
+                        BlockPos pos1 = new BlockPos(Integer.valueOf(parsedData[0]) + 20, Integer.valueOf(parsedData[1]) + 20, Integer.valueOf(parsedData[2]) + 20);
+                        BlockPos pos2 = new BlockPos(Integer.valueOf(parsedData[0]) - 20, Integer.valueOf(parsedData[1]) - 20, Integer.valueOf(parsedData[2]) - 20);
 
                         AxisAlignedBB mobArea = Team.getBoundingBoxPositions(pos1, pos2);
 
