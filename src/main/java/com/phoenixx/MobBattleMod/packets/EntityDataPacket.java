@@ -1,4 +1,4 @@
-package com.phoenixx.MobBattleMod.util;
+package com.phoenixx.MobBattleMod.packets;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;

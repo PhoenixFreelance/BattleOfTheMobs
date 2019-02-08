@@ -37,9 +37,6 @@ public class BattleBlockGui extends GuiContainer
     protected GuiTextField teamOneTextField;
     protected GuiTextField teamTwoTextField;
 
-    private String teamOneName = "Team One";
-    private String teamTwoName = "Team Two";
-
     public ArrayList<String> teamOne = new ArrayList<>();
     public ArrayList<String> teamTwo = new ArrayList<>();
 
@@ -167,13 +164,11 @@ public class BattleBlockGui extends GuiContainer
         if (this.teamOneTextField.isFocused())
         {
             this.teamOneTextField.textboxKeyTyped(typedChar, keyCode);
-            this.teamOneName = this.teamOneTextField.getText();
         }
 
         if (this.teamTwoTextField.isFocused())
         {
             this.teamTwoTextField.textboxKeyTyped(typedChar, keyCode);
-            this.teamTwoName = this.teamTwoTextField.getText();
         }
     }
     /**

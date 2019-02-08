@@ -82,7 +82,6 @@ public class Team {
     public static void updateEntity(String team, EntityCreature e)
     {
         addEntityToTeam(e, team);
-        System.out.println("UPDATING ENTITY: " + e.getDisplayName() + " FOR TEAM: " + team);
         e.targetTasks.taskEntries.removeIf(new Predicate<EntityAITaskEntry>() {
             @Override
             public boolean apply(EntityAITaskEntry input) {

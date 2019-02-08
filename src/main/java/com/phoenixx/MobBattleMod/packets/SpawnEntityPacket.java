@@ -1,4 +1,4 @@
-package com.phoenixx.MobBattleMod.util;
+package com.phoenixx.MobBattleMod.packets;
 
 import com.phoenixx.MobBattleMod.entities.Team;
 import com.phoenixx.MobBattleMod.util.handlers.FightHandler;
@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -17,12 +18,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import javax.annotation.Nullable;
 import java.util.ConcurrentModificationException;
+import java.util.List;
 import java.util.Random;
 
 public class SpawnEntityPacket implements IMessage
 {
     private int messageID;
-    private String blockData;
+    private String data;
     private String teamOneData;
     private String teamTwoData;
 
@@ -35,11 +37,16 @@ public class SpawnEntityPacket implements IMessage
     {
         this.messageID = number;
     }
+    public SpawnEntityPacket(int number, String givenData)
+    {
+        this.messageID = number;
+        this.data = givenData;
+    }
 
     public SpawnEntityPacket(int number, String givenData, String givenTeamOneData, String givenTeamTwoData)
     {
         this.messageID = number;
-        this.blockData = givenData;
+        this.data = givenData;
         this.teamOneData = givenTeamOneData;
         this.teamTwoData = givenTeamTwoData;
     }
@@ -47,7 +54,7 @@ public class SpawnEntityPacket implements IMessage
     public void fromBytes(ByteBuf buf)
     {
         this.messageID = buf.readInt();
-        this.blockData = ByteBufUtils.readUTF8String(buf);
+        this.data = ByteBufUtils.readUTF8String(buf);
         this.teamOneData = ByteBufUtils.readUTF8String(buf);
         this.teamTwoData = ByteBufUtils.readUTF8String(buf);
     }
@@ -55,7 +62,7 @@ public class SpawnEntityPacket implements IMessage
     public void toBytes(ByteBuf buf)
     {
         buf.writeInt(this.messageID);
-        ByteBufUtils.writeUTF8String(buf, blockData);
+        ByteBufUtils.writeUTF8String(buf, data);
         ByteBufUtils.writeUTF8String(buf, teamOneData);
         ByteBufUtils.writeUTF8String(buf, teamTwoData);
     }
@@ -74,14 +81,15 @@ public class SpawnEntityPacket implements IMessage
                 {
                     if(message.messageID == 0)
                     {
-                        String[] parsedBlockData = message.blockData.split("\\|");
+                        String[] parsedBlockData = message.data.split("\\|");
                         String[] parsedTeamOneData = message.teamOneData.split("\\|");
                         String[] parsedTeamTwoData = message.teamTwoData.split("\\|");
 
                         String teamOneName = parsedBlockData[3];
                         String teamTwoName = parsedBlockData[4];
 
-                        System.out.println("RECEIVED TEAM ONE NAME: " + teamOneName + " AND TEAM TWO NAME: " + teamTwoName);
+                        System.out.println("PARSED TEAM ONE DATA: " + parsedTeamOneData);
+                        System.out.println("PARSED TEAM TWO DATA: " + parsedTeamTwoData);
 
                         BlockPos teamOnePos1 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 5, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 5);
                         BlockPos teamOnePos2 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 10, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 10);
@@ -100,6 +108,23 @@ public class SpawnEntityPacket implements IMessage
                         for(String entityName: parsedTeamTwoData){
                             Entity entity = spawnCreature(world, entityName, generateRandomCord(teamTwoSpawnBB.minX, teamTwoSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamTwoSpawnBB.minZ, teamTwoSpawnBB.maxZ), teamTwoName, false);
                             //Team.updateEntity(teamTwoName, (EntityCreature) entity);
+                        }
+                    } else if(message.messageID == 1) {
+
+                        player.sendMessage(new TextComponentString("[Mob Battle] Killing remaining mobs..."));
+
+                        String[] parsedData = message.data.split("\\|");
+
+                        BlockPos pos1 = new BlockPos(Integer.valueOf(parsedData[0]) + 10, Integer.valueOf(parsedData[1]), Integer.valueOf(parsedData[2]) + 10);
+                        BlockPos pos2 = new BlockPos(Integer.valueOf(parsedData[0]) - 10, Integer.valueOf(parsedData[1]), Integer.valueOf(parsedData[2]) - 10);
+
+                        AxisAlignedBB mobArea = Team.getBoundingBoxPositions(pos1, pos2);
+
+                        List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, mobArea);
+                        entities.remove(player);
+
+                        for(int i = 0; i<entities.size(); i++) {
+                            entities.get(i).setDead();
                         }
                     }
                 }
