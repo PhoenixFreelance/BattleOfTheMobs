@@ -38,7 +38,7 @@ public class BattleBlockGui extends GuiContainer
     protected GuiTextField teamTwoTextField;
 
     private String teamOneName = "Team One";
-    private String teamTwoName = "Team One";
+    private String teamTwoName = "Team Two";
 
     public ArrayList<String> teamOne = new ArrayList<>();
     public ArrayList<String> teamTwo = new ArrayList<>();
@@ -95,8 +95,8 @@ public class BattleBlockGui extends GuiContainer
                 }
             }
 
-            FightHandler.setTeamOne(teamOne, teamOneName);
-            FightHandler.setTeamTwo(teamTwo, teamTwoName);
+            FightHandler.setTeamOne(teamOne, teamOneTextField.getText());
+            FightHandler.setTeamTwo(teamTwo, teamTwoTextField.getText());
 
             FightHandler.setBlockPos(tileBattleBlock.getPos());
 

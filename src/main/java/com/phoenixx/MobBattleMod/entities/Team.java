@@ -2,6 +2,7 @@ package com.phoenixx.MobBattleMod.entities;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
+import com.phoenixx.MobBattleMod.util.handlers.FightHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
@@ -65,6 +66,12 @@ public class Team {
         }
         score.getTeam(team).getMembershipCollection().size();
         score.addPlayerToTeam(entity.getCachedUniqueIdString(), team);
+
+        if(team.equals(FightHandler.teamOneName)){
+            FightHandler.addToTeamOne(entity);
+        } else if(team.equals(FightHandler.teamTwoName)){
+            FightHandler.addToTeamTwo(entity);
+        }
     }
 
     public static int getTeamSize(Entity entity, String team)
@@ -75,6 +82,7 @@ public class Team {
     public static void updateEntity(String team, EntityCreature e)
     {
         addEntityToTeam(e, team);
+        System.out.println("UPDATING ENTITY: " + e.getDisplayName() + " FOR TEAM: " + team);
         e.targetTasks.taskEntries.removeIf(new Predicate<EntityAITaskEntry>() {
             @Override
             public boolean apply(EntityAITaskEntry input) {

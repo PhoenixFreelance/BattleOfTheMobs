@@ -1,12 +1,9 @@
 package com.phoenixx.MobBattleMod.util;
 
-import com.phoenixx.MobBattleMod.MobBattleMod;
 import com.phoenixx.MobBattleMod.entities.Team;
+import com.phoenixx.MobBattleMod.util.handlers.FightHandler;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.*;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -19,7 +16,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Random;
 
@@ -29,9 +25,6 @@ public class SpawnEntityPacket implements IMessage
     private String blockData;
     private String teamOneData;
     private String teamTwoData;
-
-    private static ArrayList<String> teamOneList = new ArrayList<>();
-    private static ArrayList<String> teamTwoList = new ArrayList<>();
 
     public SpawnEntityPacket()
     {
@@ -43,14 +36,14 @@ public class SpawnEntityPacket implements IMessage
         this.messageID = number;
     }
 
-    public SpawnEntityPacket(int number, String givenBlockData, String givenTeamOneData, String givenTeamTwoData, String givenTeamOneName, String givenTeamTwoName)
+    public SpawnEntityPacket(int number, String givenData, String givenTeamOneData, String givenTeamTwoData)
     {
         this.messageID = number;
-        this.blockData = givenBlockData;
+        this.blockData = givenData;
         this.teamOneData = givenTeamOneData;
         this.teamTwoData = givenTeamTwoData;
     }
-
+    
     public void fromBytes(ByteBuf buf)
     {
         this.messageID = buf.readInt();
@@ -81,34 +74,32 @@ public class SpawnEntityPacket implements IMessage
                 {
                     if(message.messageID == 0)
                     {
-                        if(!world.isRemote){
-                            String[] parsedBlockData = message.blockData.split("\\|");
-                            String[] parsedTeamOneData = message.teamOneData.split("\\|");
-                            String[] parsedTeamTwoData = message.teamTwoData.split("\\|");
+                        String[] parsedBlockData = message.blockData.split("\\|");
+                        String[] parsedTeamOneData = message.teamOneData.split("\\|");
+                        String[] parsedTeamTwoData = message.teamTwoData.split("\\|");
 
-                            BlockPos teamOnePos1 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 5, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 5);
-                            BlockPos teamOnePos2 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 10, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 10);
+                        String teamOneName = parsedBlockData[3];
+                        String teamTwoName = parsedBlockData[4];
 
-                            BlockPos teamTwoPos1 = new BlockPos(Integer.valueOf(parsedBlockData[0]) - 5, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) - 5);
-                            BlockPos teamTwoPos2 = new BlockPos(Integer.valueOf(parsedBlockData[0]) - 10, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) - 10);
+                        System.out.println("RECEIVED TEAM ONE NAME: " + teamOneName + " AND TEAM TWO NAME: " + teamTwoName);
 
-                            AxisAlignedBB teamOneSpawnBB = Team.getBoundingBoxPositions(teamOnePos1, teamOnePos2);
-                            AxisAlignedBB teamTwoSpawnBB = Team.getBoundingBoxPositions(teamTwoPos1, teamTwoPos2);
+                        BlockPos teamOnePos1 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 5, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 5);
+                        BlockPos teamOnePos2 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 10, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 10);
 
-                            // TEAM ONE SPAWN
-                            for(String entityName: parsedTeamOneData){
-                                spawnCreature(world, entityName, generateRandomCord(teamOneSpawnBB.minX, teamOneSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamOneSpawnBB.minZ, teamOneSpawnBB.maxZ), parsedBlockData[3], true);
-                            }
+                        BlockPos teamTwoPos1 = new BlockPos(Integer.valueOf(parsedBlockData[0]) - 5, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) - 5);
+                        BlockPos teamTwoPos2 = new BlockPos(Integer.valueOf(parsedBlockData[0]) - 10, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) - 10);
 
-                            // TEAM TWO SPAWN
-                            for(String entityName: parsedTeamTwoData){
-                                spawnCreature(world, entityName, generateRandomCord(teamTwoSpawnBB.minX, teamTwoSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamTwoSpawnBB.minZ, teamTwoSpawnBB.maxZ), parsedBlockData[4], false);
-                            }
+                        AxisAlignedBB teamOneSpawnBB = Team.getBoundingBoxPositions(teamOnePos1, teamOnePos2);
+                        AxisAlignedBB teamTwoSpawnBB = Team.getBoundingBoxPositions(teamTwoPos1, teamTwoPos2);
+                        
+                        for(String entityName: parsedTeamOneData){
+                            Entity entity = spawnCreature(world, entityName, generateRandomCord(teamOneSpawnBB.minX, teamOneSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamOneSpawnBB.minZ, teamOneSpawnBB.maxZ), teamOneName, true);
+                            //Team.updateEntity(teamOneName, (EntityCreature) entity);
+                        }
 
-                            String teamOneDataSplit = String.join("|", teamOneList);
-                            String teamTwoDataSplit = String.join("|", teamTwoList);
-
-                            MobBattleMod.SIMPLE_NETWORK_INSTANCE.sendTo(new EntityDataPacket(0,/* parsedBlockData[0]+"|"+parsedBlockData[1]+"|"+parsedBlockData[2],*/ teamOneDataSplit, teamTwoDataSplit), player);
+                        for(String entityName: parsedTeamTwoData){
+                            Entity entity = spawnCreature(world, entityName, generateRandomCord(teamTwoSpawnBB.minX, teamTwoSpawnBB.maxX),Integer.valueOf(parsedBlockData[1]), generateRandomCord(teamTwoSpawnBB.minZ, teamTwoSpawnBB.maxZ), teamTwoName, false);
+                            //Team.updateEntity(teamTwoName, (EntityCreature) entity);
                         }
                     }
                 }
@@ -138,12 +129,16 @@ public class SpawnEntityPacket implements IMessage
                 entityliving.playLivingSound();
 
                 if(teamOne){
+                    Team.updateEntity(FightHandler.teamOneName, (EntityCreature) entity);
+                } else {
+                    Team.updateEntity(FightHandler.teamTwoName, (EntityCreature) entity);
+                }
+
+                /*if(teamOne){
                     teamOneList.add(String.valueOf(entity.getEntityId()));
                 } else {
                     teamTwoList.add(String.valueOf(entity.getEntityId()));
-                }
-
-                //Team.updateEntity(team, (EntityCreature) entity);
+                }*/
             }
             return entity;
         } catch (ConcurrentModificationException e){

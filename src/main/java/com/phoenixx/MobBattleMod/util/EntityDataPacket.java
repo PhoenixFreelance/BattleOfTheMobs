@@ -1,6 +1,5 @@
 package com.phoenixx.MobBattleMod.util;
 
-import com.phoenixx.MobBattleMod.util.handlers.FightHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityCreature;
@@ -82,8 +81,8 @@ public class EntityDataPacket implements IMessage
                         System.out.println("EntityDataPacket TEAM ONE: ["+ teamOneList.size() + "]" + teamOneList);
                         System.out.println("EntityDataPacket TEAM TWO: ["+ teamTwoList.size() + "]"+ teamTwoList);
 
-                        FightHandler.setTeamOneList(teamOneList);
-                        FightHandler.setTeamTwoList(teamTwoList);
+                        //FightHandler.setTeamOneList(teamOneList);
+                        //FightHandler.setTeamTwoList(teamTwoList);
 
                         /*BlockPos teamOnePos1 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 5, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 5);
                         BlockPos teamOnePos2 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 10, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 10);

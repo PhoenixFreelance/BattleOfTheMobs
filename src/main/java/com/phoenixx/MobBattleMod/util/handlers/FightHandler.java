@@ -1,8 +1,8 @@
 package com.phoenixx.MobBattleMod.util.handlers;
 
 import com.phoenixx.MobBattleMod.MobBattleMod;
-import com.phoenixx.MobBattleMod.entities.Team;
 import com.phoenixx.MobBattleMod.util.SpawnEntityPacket;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.util.math.BlockPos;
 
@@ -15,13 +15,16 @@ public class FightHandler
     public static ArrayList<String> teamOne = new ArrayList<>();
     public static ArrayList<String> teamTwo = new ArrayList<>();
 
-    public static ArrayList<EntityCreature> teamOneList = new ArrayList<>();
-    public static ArrayList<EntityCreature> teamTwoList = new ArrayList<>();
+    public static ArrayList<Entity> teamOneList = new ArrayList<>();
+    public static ArrayList<Entity> teamTwoList = new ArrayList<>();
 
     public static HashMap<String, String> teamData = new HashMap<>();
 
     public static String teamOneName = "Team One";
     public static String teamTwoName = "Team Two";
+
+    public static int teamOneAlive = 12;
+    public static int teamTwoAlive = 12;
 
     public static String winner = "NONE";
 
@@ -44,37 +47,33 @@ public class FightHandler
 
         if (starterTick == 0 && !started) {
             startTimer = false;
-            starterTick = 0;
+            started = true;
+            starterTick = waitTime * 20;
 
             String teamOneDataSplit = String.join("|", teamOne);
             String teamTwoDataSplit = String.join("|", teamTwo);
 
-            MobBattleMod.SIMPLE_NETWORK_INSTANCE.sendToServer(new SpawnEntityPacket(0, getBlockPos().getX()+"|"+getBlockPos().getY()+"|"+getBlockPos().getZ()+"|"+teamOneName+"|"+teamTwoName, teamOneDataSplit, teamTwoDataSplit, teamOneName, teamTwoName));
+            MobBattleMod.SIMPLE_NETWORK_INSTANCE.sendToServer(new SpawnEntityPacket(0, getBlockPos().getX()+"|"+getBlockPos().getY()+"|"+getBlockPos().getZ()+"|"+teamOneName+"|"+teamTwoName, teamOneDataSplit, teamTwoDataSplit/*, teamOneName, teamTwoName*/));
             ticker++;
-            started = true;
         }
 
         if(started){
             ticker++;
 
-            for(EntityCreature entityCreature: teamOneList){
-                Team.updateEntity(teamOneName, entityCreature);
-            }
-
-            for(EntityCreature entityCreature: teamTwoList){
-                Team.updateEntity(teamTwoName, entityCreature);
-            }
-
-            if(teamOneList.isEmpty()){
+            if(teamOneAlive == 0){
                 gameOver = true;
+                started = false;
                 winner = teamTwoName;
                 starterTick--;
+
+                System.out.println("Seconds till reset: " + starterTick / 20);
 
                 if(starterTick == 0){
                     reset();
                 }
-            } else if(teamTwoList.isEmpty()){
+            } else if(teamTwoAlive == 0){
                 gameOver = true;
+                started = false;
                 winner = teamOneName;
                 starterTick--;
 
@@ -134,11 +133,19 @@ public class FightHandler
         teamTwoName = givenTeamName;
     }
 
-    public static void setTeamOneList(ArrayList<EntityCreature> givenList) {
-        FightHandler.teamOneList = givenList;
+    public static void setTeamOneList(ArrayList<Entity> givenList) {
+        teamOneList = givenList;
     }
 
-    public static void setTeamTwoList(ArrayList<EntityCreature> givenList) {
+    public static void addToTeamOne(Entity entity) {
+        teamOneList.add(entity);
+    }
+
+    public static void addToTeamTwo(Entity entity) {
+        teamOneList.add(entity);
+    }
+
+    public static void setTeamTwoList(ArrayList<Entity> givenList) {
         FightHandler.teamTwoList = givenList;
     }
 
@@ -160,13 +167,13 @@ public class FightHandler
 
     public static String getEntityTeamFromEntityID(String uuid, boolean teamOne){
         if(teamOne){
-            for (EntityCreature entityCreature: teamOneList){
+            for (Entity entityCreature: teamOneList){
                 if(entityCreature.getUniqueID().equals(uuid)){
                     return entityCreature.getTeam().getName();
                 }
             }
         } else {
-            for (EntityCreature entityCreature: teamTwoList){
+            for (Entity entityCreature: teamTwoList){
                 if(entityCreature.getUniqueID().equals(uuid)){
                     return entityCreature.getTeam().getName();
                 }
