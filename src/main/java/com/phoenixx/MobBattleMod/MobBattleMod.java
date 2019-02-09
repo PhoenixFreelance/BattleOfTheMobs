@@ -6,10 +6,12 @@ import com.phoenixx.MobBattleMod.packets.EntityDataPacket;
 import com.phoenixx.MobBattleMod.packets.KillEntitiesPacket;
 import com.phoenixx.MobBattleMod.packets.SpawnEntityPacket;
 import com.phoenixx.MobBattleMod.proxy.CommonProxy;
+import com.phoenixx.MobBattleMod.util.ForceStopMatchCommand;
 import com.phoenixx.MobBattleMod.util.Reference;
 import com.phoenixx.MobBattleMod.util.handlers.EventHandler;
 import com.phoenixx.MobBattleMod.util.handlers.GuiHandler;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -41,6 +43,8 @@ public class MobBattleMod {
         SIMPLE_NETWORK_INSTANCE.registerMessage(SpawnEntityPacket.Handler.class, SpawnEntityPacket.class, 0, Side.SERVER);
 		SIMPLE_NETWORK_INSTANCE.registerMessage(EntityDataPacket.Handler.class, EntityDataPacket.class, 1, Side.CLIENT);
         SIMPLE_NETWORK_INSTANCE.registerMessage(KillEntitiesPacket.Handler.class, KillEntitiesPacket.class, 2, Side.SERVER);
+
+        ClientCommandHandler.instance.registerCommand(new ForceStopMatchCommand());
     }
 	
 	@Mod.EventHandler
