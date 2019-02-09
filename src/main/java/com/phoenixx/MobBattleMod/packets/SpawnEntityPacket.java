@@ -1,6 +1,6 @@
 package com.phoenixx.MobBattleMod.packets;
 
-import com.phoenixx.MobBattleMod.entities.Team;
+import com.phoenixx.MobBattleMod.util.Team;
 import com.phoenixx.MobBattleMod.util.handlers.FightHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.*;
@@ -120,7 +120,7 @@ public class SpawnEntityPacket implements IMessage
             Entity entity = EntityList.createEntityByIDFromName(new ResourceLocation(entityNameID), worldIn);
             if (entity instanceof EntityLiving)
             {
-                System.out.println("spawnCreature METHOD: "+team+" Spawning " + entity.getName() + " WITH ID: " + entity.getEntityId() + " at X: " + x + " Y: " + y + " Z:" + z);
+                //System.out.println("spawnCreature METHOD: "+team+" Spawning " + entity.getName() + " WITH ID: " + entity.getEntityId() + " at X: " + x + " Y: " + y + " Z:" + z);
                 EntityLiving entityliving = (EntityLiving)entity;
                 entity.setLocationAndAngles(x, y, z, MathHelper.wrapDegrees(worldIn.rand.nextFloat() * 360.0F), 0.0F);
                 entityliving.rotationYawHead = entityliving.rotationYaw;
@@ -134,12 +134,6 @@ public class SpawnEntityPacket implements IMessage
                 } else {
                     Team.updateEntity(FightHandler.teamTwoName, (EntityCreature) entity);
                 }
-
-                /*if(teamOne){
-                    teamOneList.add(String.valueOf(entity.getEntityId()));
-                } else {
-                    teamTwoList.add(String.valueOf(entity.getEntityId()));
-                }*/
             }
             return entity;
         } catch (ConcurrentModificationException e){

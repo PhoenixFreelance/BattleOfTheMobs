@@ -1,6 +1,7 @@
 package com.phoenixx.MobBattleMod.entities;
 
 import com.google.common.base.Predicate;
+import com.phoenixx.MobBattleMod.util.Team;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;

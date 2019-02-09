@@ -39,11 +39,11 @@ public class FightHandler
 
     public static void tick()
     {
-        if (timer % 20L == 0L && timer > 0)
+        /*if (timer % 20L == 0L && timer > 0)
         {
             System.out.println("Seconds till start: " + timer / 20);
         }
-
+*/
         if (timer > 0) {
             timer -= 1;
         } else if (timer <= 0) {

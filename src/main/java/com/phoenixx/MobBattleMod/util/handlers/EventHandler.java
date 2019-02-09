@@ -1,9 +1,9 @@
 package com.phoenixx.MobBattleMod.util.handlers;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import com.phoenixx.MobBattleMod.entities.Team;
 import com.phoenixx.MobBattleMod.proxy.ClientProxy;
 import com.phoenixx.MobBattleMod.util.EnumFight;
+import com.phoenixx.MobBattleMod.util.Team;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -42,12 +42,6 @@ public class EventHandler
     }
 
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event)
-    {
-
-    }
-
-    @SubscribeEvent
     public void onEntityDeath(LivingDeathEvent event)
     {
         Entity entity = event.getEntity();
@@ -57,23 +51,15 @@ public class EventHandler
             if(entity.getTeam() != null && FightHandler.started){
                 if(entity.getTeam().getName().equalsIgnoreCase(FightHandler.teamOneName)){
                     FightHandler.removeFromTeamOne();
-                    System.out.println("[FIGHT HAS STARTED] " + entity.getName() + " HAS JUST DIED ON TEAM ONE: " + FightHandler.teamOneAlive + "/12");
+                    //System.out.println("[FIGHT HAS STARTED] " + entity.getName() + " HAS JUST DIED ON TEAM ONE: " + FightHandler.teamOneAlive + "/12");
 
                 } else if(entity.getTeam().getName().equalsIgnoreCase(FightHandler.teamTwoName)){
                     FightHandler.removeFromTeamTwo();
-                    System.out.println("[FIGHT HAS STARTED] " + entity.getName() + " HAS JUST DIED ON TEAM TWO: " + FightHandler.teamTwoAlive + "/12");
+                    //System.out.println("[FIGHT HAS STARTED] " + entity.getName() + " HAS JUST DIED ON TEAM TWO: " + FightHandler.teamTwoAlive + "/12");
                 }
             }
         }
     }
-
-    /*@SubscribeEvent
-    public void addTeamTarget(EntityJoinWorldEvent event)
-    {
-        if(event.getEntity().getTeam()!=null) {
-            Team.updateEntity(event.getEntity().getTeam().getName(), (EntityCreature) event.getEntity());
-        }
-    }*/
 
     @SubscribeEvent
     public void teamFriendlyFire(LivingAttackEvent event)

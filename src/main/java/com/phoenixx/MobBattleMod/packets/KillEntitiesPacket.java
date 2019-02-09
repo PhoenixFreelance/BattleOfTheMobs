@@ -1,7 +1,7 @@
 package com.phoenixx.MobBattleMod.packets;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import com.phoenixx.MobBattleMod.entities.Team;
+import com.phoenixx.MobBattleMod.util.Team;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;

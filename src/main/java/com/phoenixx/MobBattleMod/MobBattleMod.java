@@ -2,7 +2,6 @@ package com.phoenixx.MobBattleMod;
 
 import com.phoenixx.MobBattleMod.blocks.tileEntities.BattleBlockTileEntity;
 import com.phoenixx.MobBattleMod.init.ModRecipes;
-import com.phoenixx.MobBattleMod.packets.EntityDataPacket;
 import com.phoenixx.MobBattleMod.packets.KillEntitiesPacket;
 import com.phoenixx.MobBattleMod.packets.SpawnEntityPacket;
 import com.phoenixx.MobBattleMod.proxy.CommonProxy;
@@ -41,8 +40,7 @@ public class MobBattleMod {
         MinecraftForge.EVENT_BUS.register(new EventHandler());
 
         SIMPLE_NETWORK_INSTANCE.registerMessage(SpawnEntityPacket.Handler.class, SpawnEntityPacket.class, 0, Side.SERVER);
-		SIMPLE_NETWORK_INSTANCE.registerMessage(EntityDataPacket.Handler.class, EntityDataPacket.class, 1, Side.CLIENT);
-        SIMPLE_NETWORK_INSTANCE.registerMessage(KillEntitiesPacket.Handler.class, KillEntitiesPacket.class, 2, Side.SERVER);
+        SIMPLE_NETWORK_INSTANCE.registerMessage(KillEntitiesPacket.Handler.class, KillEntitiesPacket.class, 1, Side.SERVER);
 
         ClientCommandHandler.instance.registerCommand(new ForceStopMatchCommand());
     }
