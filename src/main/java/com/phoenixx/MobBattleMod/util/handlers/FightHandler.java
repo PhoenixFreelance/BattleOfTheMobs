@@ -3,7 +3,9 @@ package com.phoenixx.MobBattleMod.util.handlers;
 import com.phoenixx.MobBattleMod.MobBattleMod;
 import com.phoenixx.MobBattleMod.packets.KillEntitiesPacket;
 import com.phoenixx.MobBattleMod.packets.SpawnEntityPacket;
+import com.phoenixx.MobBattleMod.proxy.ClientProxy;
 import com.phoenixx.MobBattleMod.util.EnumFight;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 
@@ -27,6 +29,9 @@ public class FightHandler
     public static int teamOneAlive = 12;
     public static int teamTwoAlive = 12;
 
+    public static int teamOneMax = 12;
+    public static int teamTwoMax = 12;
+
     public static String winner = "NONE";
 
     public static BlockPos blockPos;
@@ -39,11 +44,11 @@ public class FightHandler
 
     public static void tick()
     {
-        /*if (timer % 20L == 0L && timer > 0)
+        if(ClientProxy.minecraft.currentScreen instanceof GuiMainMenu)
         {
-            System.out.println("Seconds till start: " + timer / 20);
+            reset();
         }
-*/
+
         if (timer > 0) {
             timer -= 1;
         } else if (timer <= 0) {
@@ -116,6 +121,8 @@ public class FightHandler
 
         teamOneAlive = 12;
         teamTwoAlive = 12;
+        teamOneMax = 12;
+        teamTwoMax = 12;
 
         winner = "NONE";
 
@@ -130,11 +137,15 @@ public class FightHandler
 
     public static void setTeamOne(ArrayList<String> givenTeamOne, String givenTeamName) {
         teamOne = givenTeamOne;
+        teamOneAlive = givenTeamOne.size();
+        teamOneMax = teamOneAlive;
         teamOneName = givenTeamName;
     }
 
     public static void setTeamTwo(ArrayList<String> givenTeamTwo, String givenTeamName) {
         teamTwo = givenTeamTwo;
+        teamTwoAlive = teamTwo.size();
+        teamTwoMax = teamTwoAlive;
         teamTwoName = givenTeamName;
     }
 

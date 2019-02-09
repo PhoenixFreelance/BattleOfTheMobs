@@ -86,11 +86,11 @@ public class SpawnEntityPacket implements IMessage
                         String teamOneName = parsedBlockData[3];
                         String teamTwoName = parsedBlockData[4];
 
-                        BlockPos teamOnePos1 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 5, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 5);
-                        BlockPos teamOnePos2 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 10, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 10);
+                        BlockPos teamOnePos1 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 3, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 3);
+                        BlockPos teamOnePos2 = new BlockPos(Integer.valueOf(parsedBlockData[0]) + 7, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) + 7);
 
-                        BlockPos teamTwoPos1 = new BlockPos(Integer.valueOf(parsedBlockData[0]) - 5, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) - 5);
-                        BlockPos teamTwoPos2 = new BlockPos(Integer.valueOf(parsedBlockData[0]) - 10, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) - 10);
+                        BlockPos teamTwoPos1 = new BlockPos(Integer.valueOf(parsedBlockData[0]) - 3, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) - 3);
+                        BlockPos teamTwoPos2 = new BlockPos(Integer.valueOf(parsedBlockData[0]) - 7, Integer.valueOf(parsedBlockData[1]), Integer.valueOf(parsedBlockData[2]) - 7);
 
                         AxisAlignedBB teamOneSpawnBB = Team.getBoundingBoxPositions(teamOnePos1, teamOnePos2);
                         AxisAlignedBB teamTwoSpawnBB = Team.getBoundingBoxPositions(teamTwoPos1, teamTwoPos2);

@@ -1,19 +1,23 @@
 package com.phoenixx.MobBattleMod.util.handlers;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
+import com.phoenixx.MobBattleMod.init.ModBlocks;
 import com.phoenixx.MobBattleMod.proxy.ClientProxy;
 import com.phoenixx.MobBattleMod.util.EnumFight;
 import com.phoenixx.MobBattleMod.util.Team;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
@@ -29,6 +33,7 @@ public class EventHandler
         {
             case START :
             {
+
                 break;
             }
             case END :
@@ -56,6 +61,20 @@ public class EventHandler
                 } else if(entity.getTeam().getName().equalsIgnoreCase(FightHandler.teamTwoName)){
                     FightHandler.removeFromTeamTwo();
                     //System.out.println("[FIGHT HAS STARTED] " + entity.getName() + " HAS JUST DIED ON TEAM TWO: " + FightHandler.teamTwoAlive + "/12");
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onBlockBreak(BlockEvent.BreakEvent event)
+    {
+        Block block = event.getState().getBlock();
+        if(block == ModBlocks.BATTLE_BLOCK){
+            if(FightHandler.started){
+                if(event.getPos().equals(FightHandler.blockPos)){
+                    event.getPlayer().sendMessage(new TextComponentString(ChatFormatting.GREEN + "[Mob Battle]" + ChatFormatting.RESET + " Current mob battle has been stopped!"));
+                    FightHandler.matchStatus = EnumFight.END;
                 }
             }
         }
@@ -97,8 +116,8 @@ public class EventHandler
                 String teamOneName = FightHandler.teamOneName;
                 String teamTwoName = FightHandler.teamTwoName;
 
-                String teamOneScore = "" + FightHandler.teamOneAlive + "/12";
-                String teamTwoScore = "" + FightHandler.teamTwoAlive + "/12";
+                String teamOneScore = "" + FightHandler.teamOneAlive + "/" + FightHandler.teamOneMax;
+                String teamTwoScore = "" + FightHandler.teamTwoAlive + "/" + FightHandler.teamTwoMax;
 
                 String displayStartUpTime = (startTimer < 10 ? ChatFormatting.RED.toString() + bold + minutesLeft + ":" + (startTimer < 10 ? "0" + startTimer : startTimer) : (bold.toString() + minutesLeft + ":" + (startTimer < 10 ? "0" + startTimer : startTimer)));
                 String displayFightTimer = minutesLeft + ":" + (secondsLeft < 10 ? "0" + secondsLeft : secondsLeft);

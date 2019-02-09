@@ -89,6 +89,7 @@ public class BattleBlockGui extends GuiContainer
 
                         if(x < 12){
                             teamOne.add(entityString);
+
                         } else {
                             teamTwo.add(entityString);
                         }
