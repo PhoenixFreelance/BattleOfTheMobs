@@ -52,10 +52,10 @@ public class BattleBlockContainer extends Container
             ItemStack stackInSlot = slot.getStack();
             stack = stackInSlot.copy();
 
-            int containerSlots = inventorySlots.size() - player.inventory.mainInventory.size();
+            int containerSlots = 24;
 
             if (index < containerSlots) {
-                if (!this.mergeItemStack(stackInSlot, containerSlots, inventorySlots.size(), true)) {
+                if (!this.mergeItemStack(stackInSlot, containerSlots, this.inventorySlots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } else if (!this.mergeItemStack(stackInSlot, 0, containerSlots, false)) {

@@ -1,6 +1,5 @@
 package com.phoenixx.MobBattleMod.gui;
 
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -15,10 +14,12 @@ public class BattleBlockSlot extends SlotItemHandler {
 
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack) {
-        if (stack.getItem() == Items.SPAWN_EGG) {
+        /*if (stack.getItem() == Items.SPAWN_EGG) {
             return true;
         } else {
             return false;
-        }
+        }*/
+
+        return true;
     }
 }

@@ -33,7 +33,6 @@ public class EventHandler
         {
             case START :
             {
-
                 break;
             }
             case END :
